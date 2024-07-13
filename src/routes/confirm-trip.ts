@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { FastifyInstance } from "fastify";
-import { prisma } from "../lib/prisma";
-import { getMailClient } from "../lib/mail";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod";
 import { dayjs } from "../lib/dayjs";
+import { getMailClient } from "../lib/mail";
+import { prisma } from "../lib/prisma";
 
 import nodemailer from "nodemailer";
 
@@ -58,13 +58,13 @@ export async function confirmTrip(app: FastifyInstance) {
       const formattedStartDate = dayjs(trip.starts_at).format("LL");
       const formattedEndDate = dayjs(trip.ends_at).format("LL");
 
-      const confirmationLink = `http://localhost:3333/trips/${trip.id}/confirm/ID_DO_PARTICIPANTE`;
-
       const mail = await getMailClient();
 
       try {
         await Promise.all(
           trip.participants.map(async (participant) => {
+            const confirmationLink = `http://localhost:3333/participants/${participant.id}/confirm`;
+
             const message = await mail.sendMail({
               from: {
                 name: "Equipe planner",
